@@ -184,4 +184,29 @@ NSString *QQ_LOGIN_NETWORK_ERROR = @"QQ login network error";
     }
 
 }
+
+-(void)getUserInfo:(CDVInvokedUrlCommand *)command {
+    self.callback=command.callbackId;
+    if (self.tencentOAuth.isSessionValid) {
+        if(![self.tencentOAuth getUserInfo]) {
+            CDVPluginResult *pluginResult=[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callback];
+        }
+    }
+}
+
+- (void)getUserInfoResponse:(APIResponse*) response {
+    if (response.retCode == URLREQUEST_SUCCEED) {
+        //NSDictionary* userinfo = response.jsonResponse;
+        NSString* userinfo = response.message;
+        CDVPluginResult *pluginResult=[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:userinfo];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callback];
+
+    }
+    else {
+        CDVPluginResult *pluginResult=[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callback];
+    }
+}
+
 @end

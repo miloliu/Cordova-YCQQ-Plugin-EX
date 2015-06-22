@@ -11,4 +11,5 @@
 -(void)logout:(CDVInvokedUrlCommand*)command;
 -(void)shareToQQ:(CDVInvokedUrlCommand *)command;
 -(void)checkClientInstalled:(CDVInvokedUrlCommand *)command;
+-(void)getUserInfo:(CDVInvokedUrlCommand *)command;
 @end

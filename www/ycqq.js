@@ -35,7 +35,9 @@ module.exports = {
 	},
 	checkClientInstalled:function(successCallback, errorCallback){
 		exec(successCallback, errorCallback, "YCQQ", "checkClientInstalled", []);
+	},
+	getUserInfo:function(successCallback, errorCallback) {
+		exec(successCallback, errorCallback, "YCQQ", "getUserInfo", []);
 	}
-
 };
 
