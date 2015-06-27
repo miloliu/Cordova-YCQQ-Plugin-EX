@@ -53,15 +53,25 @@ NSString *QQ_LOGIN_NETWORK_ERROR = @"QQ login network error";
     NSDictionary *args         = [command.arguments objectAtIndex:0];
     NSLog(@"%@",args);
     if(args){
-        NSString *url = [args objectForKey:@"url"];
-        //分享图预览图URL地址
-        NSString *previewImageUrl = [args objectForKey:@"imageUrl"];
-        QQApiNewsObject *newsObj = [QQApiNewsObject
+        NSString* data = [args objectForKey:@"data"];
+        SendMessageToQQReq *req ;
+        if (data == NULL) {
+            NSString *url = [args objectForKey:@"url"];
+            //分享图预览图URL地址
+            NSString *previewImageUrl = [args objectForKey:@"imageUrl"];
+            QQApiNewsObject *newsObj = [QQApiNewsObject
                                     objectWithURL:[NSURL URLWithString:url]
                                     title: [args objectForKey:@"title"]
                                     description: [args objectForKey:@"description"]
                                     previewImageURL:[NSURL URLWithString:previewImageUrl]];
-        SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:newsObj];
+            req = [SendMessageToQQReq reqWithContent:newsObj];
+        }
+        else {
+            NSData * imgData = [[NSData new] initWithBase64EncodedString:data options:NSDataBase64DecodingIgnoreUnknownCharacters];
+            QQApiImageObject* imgObj = (QQApiImageObject*)[[QQApiExtendObject new] initWithData:imgData previewImageData:imgData title:[args objectForKey:@"title"] description:[args objectForKey:@"description"]];
+            req = [SendMessageToQQReq reqWithContent:imgObj];
+        }
+        
         QQApiSendResultCode sent = [QQApiInterface sendReq:req];
         
         [self handleSendResult:sent];
@@ -71,6 +81,7 @@ NSString *QQ_LOGIN_NETWORK_ERROR = @"QQ login network error";
     }
 
 }
+
 - (void)handleOpenURL:(NSNotification *)notification
 {
     NSURL* url = [notification object];
