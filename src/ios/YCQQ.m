@@ -68,7 +68,7 @@ NSString *QQ_LOGIN_NETWORK_ERROR = @"QQ login network error";
         }
         else {
             NSData * imgData = [[NSData new] initWithBase64EncodedString:data options:NSDataBase64DecodingIgnoreUnknownCharacters];
-            QQApiImageObject* imgObj = (QQApiImageObject*)[[QQApiExtendObject new] initWithData:imgData previewImageData:imgData title:[args objectForKey:@"title"] description:[args objectForKey:@"description"]];
+            QQApiImageObject* imgObj = (QQApiImageObject*)[QQApiImageObject objectWithData:imgData previewImageData:imgData title:[args objectForKey:@"title"] description:[args objectForKey:@"description"]];
             req = [SendMessageToQQReq reqWithContent:imgObj];
         }
         
