@@ -16,6 +16,12 @@ import com.tencent.tauth.UiError;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Base64;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class YCQQ extends CordovaPlugin {
 
@@ -125,19 +131,44 @@ public class YCQQ extends CordovaPlugin {
 		if(json ==null || json.length() == 0 ){
 			currentCallbackContext.error(QQ_PARAM_ERROR);
 		}
-		String imgUrl = json.getString("imageUrl");
-		final Bundle params = new Bundle();
-		params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE,
-				QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
-		params.putString(QQShare.SHARE_TO_QQ_TITLE, json.getString("title"));
-		params.putString(QQShare.SHARE_TO_QQ_SUMMARY, json.getString("description"));
-		params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, json.getString("url"));
-		if (imgUrl!=null && !imgUrl.equalsIgnoreCase("")) {
-			if(imgUrl.startsWith("http://") || imgUrl.startsWith("https://")){
-				params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, imgUrl);
+
+        final Bundle params = new Bundle();
+
+		final String imgData = json.getString("data");
+		if (imgData != null) {
+			byte[] raw = Base64.decode(imgData, Base64.NO_WRAP);
+            try {
+                File tempDir = this.cordova.getActivity().getFilesDir();
+                FileOutputStream temp = this.cordova.getActivity().openFileOutput("shareQQimage", this.cordova.getActivity().MODE_WORLD_READABLE);
+                temp.write(raw);
+                temp.flush();
+                temp.close();
+
+                params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_IMAGE);
+                params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL, tempDir.getAbsolutePath() + File.separator + "shareQQimage");
+                //params.putInt(QQShare.SHARE_TO_QQ_EXT_INT, QQShare.SHARE_TO_QQ_FLAG_QZONE_AUTO_OPEN);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+		else {
+			String imgUrl = json.getString("imageUrl");
+			params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE,
+					QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
+			params.putString(QQShare.SHARE_TO_QQ_TITLE, json.getString("title"));
+			params.putString(QQShare.SHARE_TO_QQ_SUMMARY, json.getString("description"));
+			params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, json.getString("url"));
+			if (imgUrl!=null && !imgUrl.equalsIgnoreCase("")) {
+				if(imgUrl.startsWith("http://") || imgUrl.startsWith("https://")){
+					params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, imgUrl);
+				}
+
 			}
-			
 		}
+
 		if(json.has("appName")){
 			params.putString(QQShare.SHARE_TO_QQ_APP_NAME, json.getString("appName"));
 		}else{
