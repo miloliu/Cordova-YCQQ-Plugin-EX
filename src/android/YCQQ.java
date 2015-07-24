@@ -134,8 +134,8 @@ public class YCQQ extends CordovaPlugin {
 
         final Bundle params = new Bundle();
 
-		final String imgData = json.getString("data");
-		if (imgData != null) {
+		if (json.has("data")) {
+            final String imgData = json.getString("data");
 			byte[] raw = Base64.decode(imgData, Base64.NO_WRAP);
             try {
                 File tempDir = this.cordova.getActivity().getFilesDir();
